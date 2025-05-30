@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>診断結果</title>
+  <script>
+    // ページ読み込み時にURLのnameパラメータを読み取る
+    window.onload = function() {
+      const params = new URLSearchParams(location.search);
+      const name = params.get("name");
+
+      if (name) {
+        document.getElementById("name").textContent = name;
+
+        const comment = diagnose(name);
+        document.getElementById("result").textContent = comment;
+      }
+
+      function diagnose(name) {
+         const results = [
+    "しっかり者で責任感が強いタイプです！",
+    "自由を愛する冒険家タイプ！",
+    "人懐っこくて人気者のムードメーカー！",
+    "冷静で知的、分析が得意なタイプ！",
+    "心優しく、聞き上手な癒し系！",
+    "何事にも全力！エネルギッシュなタイプ！",
+    "控えめだけど芯が強いタイプ！",
+    "アイデア豊富なクリエイタータイプ！",
+    "真面目でコツコツ努力するタイプ！",
+    "柔軟で空気を読む天才！",
+    "人の気持ちに敏感な繊細タイプ！",
+    "いつもポジティブで前向きな性格！",
+    "自分の世界観を大事にするアーティスト肌！",
+    "論理的で計画的、戦略家タイプ！",
+    "ちょっと天然、でも憎めない癒し系！",
+    "おおらかで包容力のあるリーダー！",
+    "集中力が高く職人肌な性格です！",
+    "楽観的で楽天的、陽気なタイプ！",
+    "自立心が強くマイペースな性格！",
+    "感情表現が豊かで共感力の高い人！",
+    "好奇心旺盛で学び続ける探究者タイプ！"
+  ];
+
+  // 名前の文字コードの合計値を使って結果を選ぶ（改良してもいいかも？）
+  let sum = 0;
+  for (let i = 0; i < name.length; i++) {
+    sum += name.charCodeAt(i);
+  }
+
+  const index = sum % results.length;
+  return results[index];
+      }
+    };
+  </script>
+  <style>
+    body {
+      font-family: "Hiragino Kaku Gothic ProN", "Arial", sans-serif;
+      background: #fff0f5;
+      color: #333;
+      text-align: center;
+      padding: 60px 20px;
+      margin: 0;
+    }
+
+    h1 {
+      color: #ff6699;
+      font-size: 2.5em;
+      margin-bottom: 20px;
+    }
+
+    p {
+      font-size: 1.2em;
+      margin: 10px 0;
+    }
+
+    strong {
+      font-weight: bold;
+      color: #e91e63;
+      font-size: 1.4em;
+    }
+
+    .back-link {
+      margin-top: 40px;
+    }
+
+    .back-link a {
+      display: inline-block;
+      background-color: #ff6699;
+      color: #fff;
+      text-decoration: none;
+      padding: 10px 25px;
+      border-radius: 8px;
+      font-size: 1em;
+      transition: background 0.3s ease;
+    }
+
+    .back-link a:hover {
+      background-color: #e25588;
+    }
+
+    a[href="/"] {
+      display: inline-block;
+      margin-top: 30px;
+      color: #777;
+      text-decoration: underline;
+      font-size: 0.95em;
+    }
+
+  .result-box {
+    background-color: #fff; /* 白背景 */
+    padding: 40px 20px;
+    border-radius: 15px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    max-width: 500px;
+    margin: 0 auto;
+  }
+  </style>
+</head>
+<body>
+  <div class ="result-box">
+      <h1>診断結果</h1>
+      <p><strong id="name"></strong> さんの性格診断結果：</p>
+      <p id="result"></p>
+
+      <div class="back-link">
+        <a href="form.html">もう一度診断する</a>
+        <br><br>
+
+        <a href="/index">TOPに戻る</a>
+      </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Windows 3.1風 アプリ</title>
+    <style>
+        body {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            color: #444;
+            font-family: 'Hannotate SC', sans-serif;
+        }
+        .window {
+            background: #fff8fc;
+            border-radius: 18px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+            padding: 2rem 1.5rem 2.5rem 1.5rem;
+            margin: 3rem auto;
+            max-width: 420px;
+            border: 2px solid #ffe0f7;
+            text-align: center;
+            position: relative;
+            animation: popin 0.8s cubic-bezier(.68,-0.55,.27,1.55);
+        }
+        .main-title {
+            font-size: 2.2rem;
+            margin-bottom: 2rem;
+            color: #ff7eb9;
+            letter-spacing: 0.1em;
+            text-shadow: 1px 2px 8px #fff0f7;
+        }
+        .icon-grid {
+            display: flex;
+            justify-content: space-around;
+            gap: 1.5rem;
+        }
+        .icon-link {
+            text-decoration: none;
+            color: #444;
+            transition: transform 0.2s;
+        }
+        .icon-link:hover .icon-box {
+            transform: translateY(-8px) scale(1.08) rotate(-3deg);
+            box-shadow: 0 8px 24px #ffb6b9a0;
+            background: #fff0f7;
+        }
+        .icon-box {
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px #ffe0f7;
+            padding: 1.2rem 1rem 0.7rem 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: all 0.3s cubic-bezier(.68,-0.55,.27,1.55);
+            border: 2px solid #ffe0f7;
+        }
+        .icon-img {
+            width: 56px;
+            height: 56px;
+            margin-bottom: 0.5rem;
+            filter: drop-shadow(0 2px 6px #ffb6b9a0);
+            transition: transform 0.2s;
+        }
+        .icon-box span {
+            font-size: 1.1rem;
+            color: #ff7eb9;
+            font-weight: bold;
+            letter-spacing: 0.05em;
+        }
+        @keyframes popin {
+            0% { transform: scale(0.7) translateY(40px); opacity: 0; }
+            80% { transform: scale(1.05) translateY(-8px); opacity: 1; }
+            100% { transform: scale(1) translateY(0); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="window">
+        <h1 th:text="${message}" class="main-title">ようこそ</h1>
+        <div class="icon-grid">
+            <a href="./calculator" class="icon-link">
+                <div class="icon-box">
+                    <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f5a9.png" alt="電卓" class="icon-img">
+                    <span>電卓</span>
+                </div>
+            </a>
+            <a href="./clock" class="icon-link">
+                <div class="icon-box">
+                    <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/23f0.png" alt="時計" class="icon-img">
+                    <span>時計</span>
+                </div>
+            </a>
+            <a href="./weather" class="icon-link">
+                <div class="icon-box">
+                    <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/2600.png" alt="天気" class="icon-img">
+                    <span>天気</span>
+                </div>
+            </a>
+            <a href="./paint" class="icon-link">
+                <div class="icon-box">
+                    <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f58c.png" alt="ペイント" class="icon-img">
+                    <span>ペイント</span>
+                </div>
+            </a>
+        </div>
+    </div>
+</body>
+</html>

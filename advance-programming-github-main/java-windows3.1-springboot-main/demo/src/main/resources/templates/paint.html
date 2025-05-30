@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>ペイントツール</title>
+    <style>
+        body {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            font-family: 'Hannotate SC', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        #toolbar {
+            background: #fff8fc;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px #ffe0f7;
+            padding: 1rem 1.5rem;
+            margin: 2rem auto 1rem auto;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            max-width: 820px;
+        }
+        #toolbar label {
+            font-size: 1.1rem;
+            color: #ff7eb9;
+            font-weight: bold;
+        }
+        #colorPicker {
+            width: 2.2rem;
+            height: 2.2rem;
+            border: none;
+            background: none;
+            margin-left: 0.5rem;
+            vertical-align: middle;
+        }
+        #brushSize {
+            vertical-align: middle;
+            margin-left: 0.5rem;
+        }
+        #eraserToggle {
+            background: #ffb6b9;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 0.5rem 1.2rem;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 2px 8px #ffe0f7;
+            transition: background 0.2s;
+        }
+        #eraserToggle:hover {
+            background: #ff7eb9;
+        }
+        .logout-btn {
+            background: #ffb6b9;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 0.7rem 2rem;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 2px 8px #ffe0f7;
+            margin-top: 2rem;
+            transition: background 0.2s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .paintLayer {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 800px;
+            height: 600px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px #ffe0f7;
+            background: transparent;
+        }
+    </style>
+</head>
+<body>
+    <div id="toolbar">
+        <label>色: <input type="color" id="colorPicker" value="#000000"></label>
+        <label>太さ: <input type="range" id="brushSize" min="1" max="50" value="5"></label>
+        <button id="eraserToggle">消しゴムモード</button>
+        <label>レイヤー:
+            <select id="layerSelect"></select>
+            <button id="addLayer">＋</button>
+            <button id="removeLayer">－</button>
+        </label>
+        <label>画像挿入: <input type="file" id="imgInput" accept="image/*"></label>
+    </div>
+    <div style="position:relative; width:820px; height:620px; margin:0 auto 2rem auto; background:#fff; border:4px solid #ffb6b9; border-radius:18px; box-shadow:0 4px 24px #ffe0f7;">
+        <div style="position:absolute; left:10px; top:10px;">
+            <canvas class="paintLayer" width="800" height="600" style="position:absolute; left:0; top:0; z-index:1;"></canvas>
+            <canvas class="paintLayer" width="800" height="600" style="position:absolute; left:0; top:0; z-index:2;"></canvas>
+            <canvas class="paintLayer" width="800" height="600" style="position:absolute; left:0; top:0; z-index:3;"></canvas>
+        </div>
+    </div>
+    <div style="text-align:center; margin-bottom:2rem;">
+        <a href="/index" class="logout-btn" style="margin-left:1rem;">TOPに戻る</a>
+    </div>
+    <script>
+        // レイヤー管理
+        const layers = Array.from(document.querySelectorAll('.paintLayer'));
+        let currentLayer = 0;
+        const layerSelect = document.getElementById('layerSelect');
+        const addLayerBtn = document.getElementById('addLayer');
+        const removeLayerBtn = document.getElementById('removeLayer');
+
+        function updateLayerSelect() {
+            layerSelect.innerHTML = '';
+            layers.forEach((_, i) => {
+                const opt = document.createElement('option');
+                opt.value = i;
+                opt.textContent = `レイヤー${i+1}`;
+                if(i === currentLayer) opt.selected = true;
+                layerSelect.appendChild(opt);
+            });
+        }
+        updateLayerSelect();
+
+        layerSelect.addEventListener('change', e => {
+            currentLayer = parseInt(e.target.value);
+        });
+
+        addLayerBtn.addEventListener('click', () => {
+            if(layers.length < 5) { // 最大5レイヤー
+                const newCanvas = document.createElement('canvas');
+                newCanvas.width = 800; newCanvas.height = 600;
+                newCanvas.className = 'paintLayer';
+                newCanvas.style.position = 'absolute';
+                newCanvas.style.left = '0'; newCanvas.style.top = '0';
+                newCanvas.style.zIndex = layers.length + 1;
+                document.querySelector('div[style*="position:relative"]').appendChild(newCanvas);
+                layers.push(newCanvas);
+                updateLayerSelect();
+            }
+        });
+
+        removeLayerBtn.addEventListener('click', () => {
+            if(layers.length > 1) {
+                const removed = layers.pop();
+                removed.parentNode.removeChild(removed);
+                if(currentLayer >= layers.length) currentLayer = layers.length - 1;
+                updateLayerSelect();
+            }
+        });
+
+        // 描画処理
+        let painting = false, erasing = false;
+        const colorPicker = document.getElementById("colorPicker");
+        const brushSize = document.getElementById("brushSize");
+        const eraserToggle = document.getElementById("eraserToggle");
+
+        function getCtx() { return layers[currentLayer].getContext("2d"); }
+
+        function startPosition(e) { painting = true; draw(e); }
+        function endPosition() { painting = false; getCtx().beginPath(); }
+        function draw(e) {
+            if (!painting) return;
+            const rect = layers[currentLayer].getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const ctx = getCtx();
+            ctx.lineWidth = brushSize.value;
+            ctx.lineCap = "round";
+            ctx.strokeStyle = erasing ? "#ffffff" : colorPicker.value;
+            ctx.lineTo(x, y);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+        }
+        eraserToggle.addEventListener("click", () => {
+            erasing = !erasing;
+            eraserToggle.textContent = erasing ? "ペンモード" : "消しゴムモード";
+        });
+        layers.forEach(layer => {
+            layer.addEventListener("mousedown", startPosition);
+            layer.addEventListener("mouseup", endPosition);
+            layer.addEventListener("mousemove", draw);
+            layer.addEventListener("mouseleave", endPosition);
+        });
+
+        // 画像挿入
+        document.getElementById('imgInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(ev) {
+                const img = new Image();
+                img.onload = function() {
+                    getCtx().drawImage(img, 0, 0, 400, 300); // 例: 左上に400x300で描画
+                };
+                img.src = ev.target.result;
+            };
+            reader.readAsDataURL(file);
+        });
+    </script>
+</body>
+</html>

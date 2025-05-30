@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>時計</title>
+    <link rel="stylesheet" href="/demo/src/main/resources/static/style.css">
+</head>
+<body>
+    <div class="window">
+        <div class="title-bar">
+            <div class="title-bar-text">現在時刻</div>
+        </div>
+        <div class="window-body" style="text-align:center;">
+            <p style="font-size:2rem; margin-bottom:1.5rem;">
+                <strong id="digital-clock">00:00:00</strong>
+            </p>
+            <div style="display:flex; justify-content:center;">
+                <svg id="analog-clock" width="160" height="160" viewBox="0 0 160 160">
+                    <circle cx="80" cy="80" r="75" fill="#fff8fc" stroke="#ffb6b9" stroke-width="6"/>
+                    <circle cx="80" cy="80" r="68" fill="#ffe0f7" stroke="#ff7eb9" stroke-width="2"/>
+                    <!-- 12時間の目盛り -->
+                    <g id="clock-ticks">
+                        <!-- JSで描画 -->
+                    </g>
+                    <!-- 針 -->
+                    <line id="hour-hand" x1="80" y1="80" x2="80" y2="45" stroke="#ff7eb9" stroke-width="6" stroke-linecap="round"/>
+                    <line id="minute-hand" x1="80" y1="80" x2="80" y2="30" stroke="#b388ff" stroke-width="4" stroke-linecap="round"/>
+                    <line id="second-hand" x1="80" y1="80" x2="80" y2="22" stroke="#00bcd4" stroke-width="2" stroke-linecap="round"/>
+                    <circle cx="80" cy="80" r="6" fill="#ff7eb9" stroke="#fff" stroke-width="2"/>
+                </svg>
+            </div>
+            <button onclick="location.href='/index'" class="back-btn">戻る</button>
+        </div>
+    </div>
+    <style>
+        body {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            font-family: 'Hannotate SC', sans-serif;
+        }
+        .window {
+            background: #fff8fc;
+            border-radius: 18px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+            padding: 2rem 1.5rem 2.5rem 1.5rem;
+            margin: 3rem auto;
+            max-width: 340px;
+            border: 2px solid #ffe0f7;
+            text-align: center;
+            position: relative;
+            animation: popin 0.8s cubic-bezier(.68,-0.55,.27,1.55);
+        }
+        .title-bar {
+            background: #ffb6b9;
+            border-radius: 12px 12px 0 0;
+            padding: 0.5rem 0;
+            margin-bottom: 1.2rem;
+        }
+        .title-bar-text {
+            color: #fff;
+            font-weight: bold;
+            font-size: 1.2rem;
+            letter-spacing: 0.1em;
+        }
+        .back-btn {
+            margin-top: 2rem;
+            background: #ffb6b9;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 0.5rem 1.5rem;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 2px 8px #ffe0f7;
+            transition: background 0.2s;
+        }
+        .back-btn:hover {
+            background: #ff7eb9;
+        }
+        @keyframes popin {
+            0% { transform: scale(0.7) translateY(40px); opacity: 0; }
+            80% { transform: scale(1.05) translateY(-8px); opacity: 1; }
+            100% { transform: scale(1) translateY(0); opacity: 1; }
+        }
+    </style>
+    <script>
+    // デジタル時計・アナログ時計の両方を更新
+    function updateClock() {
+        const now = new Date();
+        // デジタル
+        const pad = n => n.toString().padStart(2, '0');
+        const timeStr = `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+        document.getElementById('digital-clock').textContent = timeStr;
+        // アナログ
+        const sec = now.getSeconds();
+        const min = now.getMinutes();
+        const hour = now.getHours() % 12 + min / 60;
+        // 針の角度
+        const secAngle = sec * 6;
+        const minAngle = min * 6 + sec * 0.1;
+        const hourAngle = hour * 30;
+        document.getElementById('second-hand').setAttribute('transform', `rotate(${secAngle} 80 80)`);
+        document.getElementById('minute-hand').setAttribute('transform', `rotate(${minAngle} 80 80)`);
+        document.getElementById('hour-hand').setAttribute('transform', `rotate(${hourAngle} 80 80)`);
+    }
+    // 目盛り描画
+    function drawTicks() {
+        const ticks = [];
+        for(let i=0; i<12; i++) {
+            const angle = i * 30;
+            const x1 = 80 + 60 * Math.sin(angle * Math.PI/180);
+            const y1 = 80 - 60 * Math.cos(angle * Math.PI/180);
+            const x2 = 80 + 70 * Math.sin(angle * Math.PI/180);
+            const y2 = 80 - 70 * Math.cos(angle * Math.PI/180);
+            ticks.push(`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#b388ff" stroke-width="3"/>`);
+        }
+        document.getElementById('clock-ticks').innerHTML = ticks.join('');
+    }
+    drawTicks();
+    updateClock();
+    setInterval(updateClock, 1000);
+    </script>
+</body>
+</html>

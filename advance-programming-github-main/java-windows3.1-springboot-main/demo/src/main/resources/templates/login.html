@@ -1,0 +1,86 @@
+<!-- src/main/resources/templates/login.html -->
+<!DOCTYPE html>
+<html>
+<head>
+  <title>ログイン</title>
+  <style>
+    body {
+      background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Hannotate SC', sans-serif;
+      margin: 0;
+      position: relative;
+    }
+    .welcome-title {
+      position: absolute;
+      top: 4%;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 2.5rem;
+      color: #ff7eb9;
+      font-weight: bold;
+      letter-spacing: 0.12em;
+      text-shadow: 1px 2px 12px #fff0f7;
+      z-index: 10;
+      animation: fadein 1.2s;
+      pointer-events: none;
+    }
+    .login-window {
+      background: #fff8fc;
+      border-radius: 18px;
+      box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+      padding: 2.5rem 2rem 2rem 2rem;
+      border: 2px solid #ffe0f7;
+      text-align: center;
+      animation: popin 0.8s cubic-bezier(.68,-0.55,.27,1.55);
+    }
+    .login-title {
+      font-size: 2rem;
+      margin-bottom: 2rem;
+      color: #ff7eb9;
+      letter-spacing: 0.1em;
+      text-shadow: 1px 2px 8px #fff0f7;
+      animation: fadein 1.2s;
+    }
+    .login-btn {
+      background: linear-gradient(90deg, #ff7eb9 0%, #ff65a3 100%);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 0.8rem 2.2rem;
+      font-size: 1.2rem;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 4px 16px #ffb6b9a0;
+      transition: transform 0.2s, box-shadow 0.2s;
+      margin-top: 1.5rem;
+    }
+    .login-btn:hover {
+      transform: translateY(-6px) scale(1.05) rotate(-2deg);
+      box-shadow: 0 8px 32px #ffb6b9a0;
+      background: linear-gradient(90deg, #ff65a3 0%, #ff7eb9 100%);
+    }
+    @keyframes popin {
+      0% { transform: scale(0.7) translateY(40px); opacity: 0; }
+      80% { transform: scale(1.05) translateY(-8px); opacity: 1; }
+      100% { transform: scale(1) translateY(0); opacity: 1; }
+    }
+    @keyframes fadein {
+      0% { opacity: 0; }
+      100% { opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <div class="welcome-title">Welcome!!!</div>
+  <div class="login-window">
+    <h2 class="login-title">Googleでログイン</h2>
+    <a href="/oauth2/authorization/google">
+      <button class="login-btn">Googleでログイン</button>
+    </a>
+  </div>
+</body>
+</html>

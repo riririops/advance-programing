@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>タイピングゲーム</title>
+    <style>
+        body {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            font-family: 'Hannotate SC', sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .typing-container {
+            background: #fff8fc;
+            border-radius: 18px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+            padding: 2.5rem 2rem 2rem 2rem;
+            border: 2px solid #ffe0f7;
+            text-align: center;
+            min-width: 340px;
+        }
+        .typing-word {
+            font-size: 2rem;
+            color: #ff7eb9;
+            margin-bottom: 1.5rem;
+            letter-spacing: 0.1em;
+        }
+        .typing-input {
+            font-size: 1.2rem;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            border: 2px solid #ffb6b9;
+            margin-bottom: 1rem;
+            width: 80%;
+        }
+        .typing-btn, .back-btn {
+            background: linear-gradient(90deg, #ff7eb9 0%, #ff65a3 100%);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 0.7rem 2rem;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 16px #ffb6b9a0;
+            margin: 0.5rem;
+            transition: background 0.2s, transform 0.2s;
+        }
+        .typing-btn:hover, .back-btn:hover {
+            background: linear-gradient(90deg, #ff65a3 0%, #ff7eb9 100%);
+            transform: scale(1.05);
+        }
+        .typing-result {
+            font-size: 1.1rem;
+            color: #444;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="typing-container">
+        <h2>タイピングゲーム</h2>
+        <div class="typing-word" id="word"></div>
+        <input type="text" id="input" class="typing-input" autocomplete="off" placeholder="ここに入力">
+        <div>
+            <button class="typing-btn" onclick="check()">判定</button>
+            <button class="typing-btn" onclick="nextWord()">次の単語</button>
+            <a href="/index" class="back-btn">TOPに戻る</a>
+        </div>
+        <div class="typing-result" id="result"></div>
+        <div style="margin-top:1.5rem; color:#888; font-size:0.95rem;">
+            制限時間なし・好きなだけ練習できます
+        </div>
+    </div>
+    <script>
+        const words = [
+            "mouse", "AI", "computer", "keyboard", "springboot", "java", "windows", "autoconfig", "System.out.println", "NogiMasahumi",
+            "programming", "development", "Sakamoto", "VScode", "Naniwa", "HTML", "DynamicWebSeerver", "port", "Linux", "login",
+            "password", "GitHub", "repository", "commit", "push", "pull", "branch", "merge", "conflict", "debugging", "algorithm",
+            "function", "variable", "array", "object", "class", "inheritance", "encapsulation", "polymorphism", "interface", "exception","null",
+            "pointer", "stack", "heap", "recursion", "iteration", "syntax", "compiler", "interpreter", "runtime", "library","framework",
+            "API", "database", "SQL", "NoSQL", "query", "transaction", "index", "join", "normalization", "denormalization","exception",
+            "CRUD", "REST", "endpoint", "JSON", "XML", "HTML5", "CSS3", "JavaScript", "TypeScript", "React","Vue.js",
+        ];
+        let currentWord = "";
+        function nextWord() {
+            currentWord = words[Math.floor(Math.random() * words.length)];
+            document.getElementById("word").textContent = currentWord;
+            document.getElementById("input").value = "";
+            document.getElementById("result").textContent = "";
+            document.getElementById("input").focus();
+        }
+        function check() {
+            const input = document.getElementById("input").value;
+            if (input === currentWord) {
+                document.getElementById("result").textContent = "正解！";
+                document.getElementById("result").style.color = "#28a745";
+            } else {
+                document.getElementById("result").textContent = "間違い！";
+                document.getElementById("result").style.color = "#ff3b3b";
+            }
+        }
+        document.getElementById("input").addEventListener("keydown", function(e) {
+            if (e.key === "Enter") check();
+        });
+        nextWord();
+    </script>
+</body>
+</html>

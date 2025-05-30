@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <title>今日の月齢</title>
+    <style>
+        body {
+            background: linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%);
+            font-family: 'Hannotate SC', sans-serif;
+            color: #4a148c;
+        }
+        .container {
+            background: #fff8fc;
+            border-radius: 18px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+            padding: 2rem 1.5rem 2.5rem 1.5rem;
+            margin: 3rem auto;
+            max-width: 400px;
+            border: 2px solid #ffe0f7;
+            text-align: center;
+        }
+        h1 {
+            color: #ff7eb9;
+            margin-bottom: 1.5rem;
+            text-shadow: 1px 2px 8px #fff0f7;
+        }
+        .moon-info {
+            font-size: 1.2em;
+            margin-top: 1.5em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>今日の月齢</h1>
+        <div class="moon-info" th:if="${moon != null}">
+            <p>観測日時: <span th:text="${moon.time}"></span></p>
+            <p>月齢: <span th:text="${moon.age}"></span></p>
+            <p>高度: <span th:text="${moon.altitude}"></span></p>
+            <p>方位角: <span th:text="${moon.azimuth}"></span></p>
+        </div>
+        <div th:if="${moon == null}">
+            <p>月齢情報を取得できませんでした。</p>
+        </div>
+        <div style="margin-top: 2em;">
+            <a href="/index" style="
+                display: inline-block;
+                background: #ffb6b9;
+                color: #fff;
+                padding: 0.7em 2em;
+                border-radius: 10px;
+                text-decoration: none;
+                font-weight: bold;
+                box-shadow: 0 2px 8px #ffb6b9a0;
+                transition: background 0.2s;
+            " onmouseover="this.style.background='#ff7eb9'" onmouseout="this.style.background='#ffb6b9'">
+                TOPに戻る
+            </a>
+        </div>
+    </div>
+</body>
+</html>

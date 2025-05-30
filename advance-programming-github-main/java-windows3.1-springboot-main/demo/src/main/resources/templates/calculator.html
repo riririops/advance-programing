@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>電卓</title>
+    <link rel="stylesheet" href="/demo/src/main/resources/static/style.css">
+</head>
+<body>
+    <div class="window">
+        <div class="title-bar">
+            <div class="title-bar-text">電卓</div>
+        </div>
+        <div class="window-body">
+            <form action="/calculate" method="post" id="calc-form" style="margin:2rem auto; text-align:center; max-width:340px;">
+                <div class="calc-row">
+                    <input type="number" name="a" id="a" required placeholder="a" style="width:80px;">
+                    <select name="op" id="op" style="width:60px;">
+                        <option value="+">+</option>
+                        <option value="-">-</option>
+                        <option value="*">*</option>
+                        <option value="/">/</option>
+                    </select>
+                    <input type="number" name="b" id="b" required placeholder="b" style="width:80px;">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                    <button type="submit">計算</button>
+                </div>
+                <div class="calc-buttons">
+                    <div>
+                        <button type="button" class="num-btn" data-target="a" value="7">7</button>
+                        <button type="button" class="num-btn" data-target="a" value="8">8</button>
+                        <button type="button" class="num-btn" data-target="a" value="9">9</button>
+                    </div>
+                    <div>
+                        <button type="button" class="num-btn" data-target="a" value="4">4</button>
+                        <button type="button" class="num-btn" data-target="a" value="5">5</button>
+                        <button type="button" class="num-btn" data-target="a" value="6">6</button>
+                    </div>
+                    <div>
+                        <button type="button" class="num-btn" data-target="a" value="1">1</button>
+                        <button type="button" class="num-btn" data-target="a" value="2">2</button>
+                        <button type="button" class="num-btn" data-target="a" value="3">3</button>
+                    </div>
+                    <div>
+                        <button type="button" class="num-btn" data-target="a" value="0">0</button>
+                        <button type="button" class="num-btn" data-target="a" value="-">±</button>
+                        <button type="button" class="clear-btn" data-target="a">C</button>
+                    </div>
+                </div>
+                <div class="calc-buttons" style="margin-top:1rem;">
+                    <div>
+                        <button type="button" class="num-btn" data-target="b" value="7">7</button>
+                        <button type="button" class="num-btn" data-target="b" value="8">8</button>
+                        <button type="button" class="num-btn" data-target="b" value="9">9</button>
+                    </div>
+                    <div>
+                        <button type="button" class="num-btn" data-target="b" value="4">4</button>
+                        <button type="button" class="num-btn" data-target="b" value="5">5</button>
+                        <button type="button" class="num-btn" data-target="b" value="6">6</button>
+                    </div>
+                    <div>
+                        <button type="button" class="num-btn" data-target="b" value="1">1</button>
+                        <button type="button" class="num-btn" data-target="b" value="2">2</button>
+                        <button type="button" class="num-btn" data-target="b" value="3">3</button>
+                    </div>
+                    <div>
+                        <button type="button" class="num-btn" data-target="b" value="0">0</button>
+                        <button type="button" class="num-btn" data-target="b" value="-">±</button>
+                        <button type="button" class="clear-btn" data-target="b">C</button>
+                    </div>
+                </div>
+            </form>
+            <p th:if="${result != null}" class="calc-result">結果: <span th:text="${result}"></span></p>
+            <p th:if="${error != null}" style="color:red; text-align:center; font-weight:bold;">[[${error}]]</p>
+            <div style="margin-top:1.5rem;">
+                <a href="/index" class="cute-btn back">TOPに戻る</a>
+                <a href="/logout" class="cute-btn logout">ログアウト</a>
+            </div>
+        </div>
+    </div>
+    <style>
+        body {
+            background: linear-gradient(135deg, #f9e7fe 0%, #e0f7fa 100%);
+            font-family: 'Hannotate SC', sans-serif;
+            color: #a64ca6;
+        }
+        .window {
+            background: #fff8fc;
+            border-radius: 18px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+            padding: 2rem 1.5rem 2.5rem 1.5rem;
+            margin: 3rem auto;
+            max-width: 420px;
+            border: 2px solid #ffe0f7;
+            text-align: center;
+        }
+        .title-bar {
+            background: linear-gradient(90deg, #ffb6b9 0%, #ff7eb9 100%);
+            border-radius: 14px 14px 0 0;
+            padding: 0.7em 0;
+            margin-bottom: 1.2em;
+            box-shadow: 0 2px 8px #ffb6b9a0;
+        }
+        .title-bar-text {
+            color: #fff;
+            font-size: 1.3em;
+            font-weight: bold;
+            letter-spacing: 0.08em;
+            text-shadow: 1px 2px 8px #fff0f7;
+        }
+        .window-body {
+            padding: 1em 0.5em;
+        }
+        .calc-row {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            justify-content: center;
+        }
+        input[type="number"], select {
+            border-radius: 8px;
+            border: 1px solid #ffb6b9;
+            padding: 0.5em;
+            font-size: 1.1em;
+            background: #fff0f7;
+            color: #a64ca6;
+            margin: 0 0.2em;
+            width: 80px;
+        }
+        select {
+            width: 60px;
+        }
+        button[type="submit"], .cute-btn {
+            background: linear-gradient(90deg, #ffb6b9 0%, #ff7eb9 100%);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            padding: 0.6em 1.5em;
+            font-size: 1.1em;
+            font-weight: bold;
+            box-shadow: 0 2px 8px #ffb6b9a0;
+            margin-left: 0.5em;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+        }
+        button[type="submit"]:hover, .cute-btn:hover {
+            background: linear-gradient(90deg, #ff7eb9 0%, #ffb6b9 100%);
+            transform: scale(1.05);
+        }
+        .num-btn, .clear-btn {
+            width: 2.5rem; height: 2.5rem; font-size: 1.2rem; border-radius: 8px;
+            border: 1px solid #ffe0f7; background: #fff0f7; color: #ff7eb9;
+            font-weight: bold; box-shadow: 0 2px 6px #ffe0f7;
+            margin: 0 0.1rem; cursor: pointer; transition: background 0.2s, transform 0.1s;
+        }
+        .num-btn:hover, .clear-btn:hover {
+            background: #ffb6b9; color: #fff; transform: scale(1.08);
+        }
+        .calc-result {
+            font-size: 1.7rem;
+            color: #ff7eb9;
+            background: #fff0f7;
+            border-radius: 10px;
+            padding: 0.7rem 1.2rem;
+            margin: 1.2rem auto 0 auto;
+            width: fit-content;
+            box-shadow: 0 2px 8px #ffe0f7;
+            text-align: center;
+            animation: popin 0.7s cubic-bezier(.68,-0.55,.27,1.55);
+        }
+        @keyframes popin {
+            0% { transform: scale(0.7) translateY(20px); opacity: 0; }
+            80% { transform: scale(1.05) translateY(-4px); opacity: 1; }
+            100% { transform: scale(1) translateY(0); opacity: 1; }
+        }
+        .cute-btn.back {
+            background: linear-gradient(90deg, #b2f7ef 0%, #f7d6e0 100%);
+            color: #a64ca6;
+            margin-top: 1.5rem;
+        }
+        .cute-btn.back:hover {
+            background: linear-gradient(90deg, #f7d6e0 0%, #b2f7ef 100%);
+            color: #a64ca6;
+        }
+        .cute-btn.logout {
+            background: linear-gradient(90deg, #f7d6e0 0%, #b2f7ef 100%);
+            color: #a64ca6;
+            margin-top: 1.5rem;
+        }
+        .cute-btn.logout:hover {
+            background: linear-gradient(90deg, #b2f7ef 0%, #f7d6e0 100%);
+            color: #a64ca6;
+        }
+    </style>
+    <script>
+    // 数字ボタン・クリアボタンの動作
+    document.querySelectorAll('.num-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const target = document.getElementById(this.dataset.target);
+            if(this.value === '-') {
+                // ±ボタン
+                if(target.value.startsWith('-')) target.value = target.value.substring(1);
+                else if(target.value.length > 0) target.value = '-' + target.value;
+            } else {
+                target.value = (target.value || '') + this.value;
+            }
+            target.focus();
+        });
+    });
+    document.querySelectorAll('.clear-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.getElementById(this.dataset.target).value = '';
+        });
+    });
+    </script>
+</body>
+</html>

@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>15パズル</title>
+    <style>
+        body {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            font-family: 'Hannotate SC', sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .puzzle-container {
+            background: #fff8fc;
+            border-radius: 18px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+            padding: 2.5rem 2rem 2rem 2rem;
+            border: 2px solid #ffe0f7;
+            text-align: center;
+            min-width: 340px;
+        }
+        .puzzle-board {
+            display: grid;
+            grid-template-columns: repeat(4, 60px);
+            grid-template-rows: repeat(4, 60px);
+            gap: 8px;
+            margin: 1.5rem auto;
+            justify-content: center;
+        }
+        .puzzle-tile {
+            width: 60px;
+            height: 60px;
+            background: #eee;
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px #ffb6b9a0;
+            cursor: pointer;
+            padding: 0;
+            position: relative;
+            overflow: hidden;
+        }
+        .puzzle-tile.empty {
+            background: #fff0f7;
+            cursor: default;
+        }
+        .puzzle-btn, .back-btn {
+            background: linear-gradient(90deg, #ff7eb9 0%, #ff65a3 100%);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 0.7rem 2rem;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 16px #ffb6b9a0;
+            margin: 0.5rem;
+            transition: background 0.2s, transform 0.2s;
+        }
+        .puzzle-btn:hover, .back-btn:hover {
+            background: linear-gradient(90deg, #ff65a3 0%, #ff7eb9 100%);
+            transform: scale(1.05);
+        }
+        .puzzle-result {
+            font-size: 1.1rem;
+            color: #444;
+            margin-top: 1rem;
+        }
+        .tile-img {
+            position: absolute;
+            width: 240px;
+            height: 240px;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            user-select: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="puzzle-container">
+        <h2>15パズル（画像バージョン）</h2>
+        <div class="puzzle-board" id="board"></div>
+        <button class="puzzle-btn" onclick="shuffle()">シャッフル</button>
+        <a href="/index" class="back-btn">TOPに戻る</a>
+        <div class="puzzle-result" id="result"></div>
+        <div style="margin-top:1rem;">
+            <input type="text" id="imgUrl" placeholder="画像URLを入力" style="width:200px;">
+            <button class="puzzle-btn" onclick="setImage()">画像変更</button>
+        </div>
+    </div>
+    <script>
+        let board = [];
+        let imgUrl = "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=240&q=80"; // サンプル画像
+        function init() {
+            board = [];
+            for (let i = 1; i <= 15; i++) board.push(i);
+            board.push("");
+            render();
+        }
+        function render() {
+            const boardDiv = document.getElementById("board");
+            boardDiv.innerHTML = "";
+            for (let i = 0; i < 16; i++) {
+                const btn = document.createElement("button");
+                btn.className = "puzzle-tile" + (board[i] === "" ? " empty" : "");
+                btn.disabled = board[i] === "";
+                btn.onclick = () => move(i);
+                btn.style.position = "relative";
+                if (board[i] !== "") {
+                    // 画像の切り出し位置を計算
+                    const n = board[i] - 1;
+                    const x = (n % 4) * -60;
+                    const y = Math.floor(n / 4) * -60;
+                    const img = document.createElement("img");
+                    img.src = imgUrl;
+                    img.className = "tile-img";
+                    img.style.left = x + "px";
+                    img.style.top = y + "px";
+                    btn.appendChild(img);
+                }
+                boardDiv.appendChild(btn);
+            }
+        }
+        function move(idx) {
+            const empty = board.indexOf("");
+            const canMove = [idx - 1, idx + 1, idx - 4, idx + 4].includes(empty) &&
+                !(idx % 4 === 0 && empty === idx - 1) &&
+                !(idx % 4 === 3 && empty === idx + 1);
+            if (canMove) {
+                [board[idx], board[empty]] = [board[empty], board[idx]];
+                render();
+                checkClear();
+            }
+        }
+        function shuffle() {
+            for (let i = 0; i < 1000; i++) {
+                const movable = [];
+                const empty = board.indexOf("");
+                if (empty % 4 !== 0) movable.push(empty - 1);
+                if (empty % 4 !== 3) movable.push(empty + 1);
+                if (empty - 4 >= 0) movable.push(empty - 4);
+                if (empty + 4 < 16) movable.push(empty + 4);
+                const idx = movable[Math.floor(Math.random() * movable.length)];
+                [board[empty], board[idx]] = [board[idx], board[empty]];
+            }
+            render();
+            document.getElementById("result").textContent = "";
+        }
+        function checkClear() {
+            for (let i = 0; i < 15; i++) {
+                if (board[i] !== i + 1) return;
+            }
+            if (board[15] === "") {
+                document.getElementById("result").textContent = "クリア！おめでとう！";
+            }
+        }
+        function setImage() {
+            const url = document.getElementById("imgUrl").value.trim();
+            if (url) {
+                imgUrl = url;
+                render();
+            }
+        }
+        window.onload = init;
+    </script>
+</body>
+</html>

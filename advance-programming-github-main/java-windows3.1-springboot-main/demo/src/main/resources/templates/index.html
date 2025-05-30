@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <title>自主制作課題</title>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            /* 背景画像を設定 */
+            background: url('https://images.unsplash.com/photo-1487088678257-3a541e6e3922?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D') no-repeat center center fixed;
+            background-size: cover;
+            color: #444;
+            font-family: 'Hannotate SC', sans-serif;
+            margin: 40px 0;
+            font-size: 14px;
+            font-weight: 500;
+            -webkit-font-smoothing: antialiased;
+        }
+        .title {
+            font-family: 'Hannotate SC', sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+            color: #5D4037;
+            text-align: center;
+        }
+        .container {
+            padding: 40px 80px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .card-wrap {
+            margin: 10px;
+            transform: perspective(800px);
+            transform-style: preserve-3d;
+            cursor: pointer;
+        }
+        .card {
+            position: relative;
+            flex: 0 0 240px;
+            width: 240px;
+            height: 320px;
+            background-color: #333;
+            overflow: hidden;
+            border-radius: 10px;
+            box-shadow:
+                rgba(0,0,0,0.66) 0 30px 60px 0,
+                inset #333 0 0 0 5px,
+                inset rgba(255,255,255,0.5) 0 0 0 6px;
+            transition: 1s cubic-bezier(0.445, 0.05, 0.55, 0.95);
+        }
+        .card-bg {
+            opacity: 0.5;
+            position: absolute;
+            top: -20px; left: -20px;
+            width: 100%;
+            height: 100%;
+            padding: 20px;
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: cover;
+            transition:
+                1s cubic-bezier(0.445, 0.05, 0.55, 0.95),
+                opacity 5s 1s cubic-bezier(0.445, 0.05, 0.55, 0.95);
+            pointer-events: none;
+        }
+        .card-info {
+            padding: 20px;
+            position: absolute;
+            bottom: 0;
+            color: #fff;
+            transform: translateY(40%);
+            transition: 0.6s 1.6s cubic-bezier(0.215, 0.61, 0.355, 1);
+        }
+        .card-info h1 {
+            font-family: 'Hannotate SC', sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+            text-shadow: rgba(0,0,0,0.5) 0 10px 10px;
+            margin: 0 0 10px 0;
+        }
+        .card-info p {
+            opacity: 0;
+            text-shadow: rgba(0,0,0,1) 0 2px 3px;
+            transition: 0.6s 1.6s cubic-bezier(0.215, 0.61, 0.355, 1);
+        }
+        .card-wrap:hover .card-info {
+            transform: translateY(0);
+            transition: 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+        .card-wrap:hover .card-info p {
+            opacity: 1;
+            transition: 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+        .card-wrap:hover .card-bg {
+            opacity: 0.8;
+            transition: 0.6s cubic-bezier(0.23, 1, 0.32, 1), opacity 5s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+        .card-wrap:hover .card {
+            box-shadow:
+                rgba(255,255,255,0.2) 0 0 40px 5px,
+                rgba(255,255,255,1) 0 0 0 1px,
+                rgba(0,0,0,0.66) 0 30px 60px 0,
+                inset #333 0 0 0 5px,
+                inset #fff 0 0 0 6px;
+            transition: 0.6s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 2s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+        /* カードの傾きアニメーション */
+    </style>
+</head>
+<body>
+    <h1 class="title"></h1>
+    <div id="app" class="container">
+        <!-- カードをVue.jsでループ表示 -->
+        <div class="card-wrap" v-for="card in cards" :key="card.title"
+            @mousemove="handleMouseMove($event, $event.currentTarget)"
+            @mouseenter="handleMouseEnter($event.currentTarget)"
+            @mouseleave="handleMouseLeave($event.currentTarget)">
+            <div class="card"
+                :style="card.style">
+                <!-- カード背景画像 -->
+                <div class="card-bg" :style="{ backgroundImage: 'url(' + card.image + ')', ...card.bgStyle }"></div>
+                <div class="card-info">
+                    <!-- カードタイトル -->
+                    <h1>{{ card.title }}</h1>
+                    <!-- カード説明 -->
+                    <p>{{ card.desc }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Vue.js本体の読み込み -->
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.7.14/dist/vue.min.js"></script>
+    <script>
+    // Vue.jsでカードリストを管理
+    new Vue({
+        el: '#app',
+        data: {
+            cards: [
+                {
+                    title: '電卓',
+                    desc: 'シンプルな電卓アプリ',
+                    image: 'https://images.unsplash.com/photo-1626266061368-46a8f578ddd6?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+                    style: {},
+                    bgStyle: {},
+                    link: './calculator'
+                },
+                {
+                    title: '時計',
+                    desc: 'time is money',
+                    image: 'https://images.unsplash.com/photo-1616198814651-e71f960c3180?q=80&w=987&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+                    style: {},
+                    bgStyle: {},
+                    link: './clock'
+                },
+                {
+                    title: '天気',
+                    desc: '東京の天気情報',
+                    image: 'https://images.unsplash.com/photo-1561553873-e8491a564fd0?q=80&w=947&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+                    style: {},
+                    bgStyle: {},
+                    link: './weather'
+                },
+                {
+                    title: 'ペイント',
+                    desc: 'お絵かきツール',
+                    image: 'https://images.unsplash.com/photo-1513364776144-60967b0f800f?q=80&w=1171&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+                    style: {},
+                    bgStyle: {},
+                    link: './paint'
+                },
+                {
+                    title: 'タイピング',
+                    desc: 'タイピングゲーム',
+                    image: 'https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?q=80&w=1172&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+                    style: {},
+                    bgStyle: {},
+                    link: './typing'
+                },
+                {
+                    title: 'パズル',
+                    desc: '15パズルゲーム',
+                    image: 'https://images.unsplash.com/photo-1612611741189-a9b9eb01d515?q=80&w=987&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+                    style: {},
+                    bgStyle: {},
+                    link: './puzzle'
+                },
+                {
+                    title: '星占い',
+                    desc: '12星座占い',
+                    image: 'https://images.unsplash.com/photo-1597567175782-1e5771f7f313?q=80&w=987&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+                    style: {},
+                    bgStyle: {},
+                    link: './horoscope'
+                },
+                {
+                    title: '満月',
+                    desc: '今日の月齢',
+                    image: 'https://images.unsplash.com/photo-1677797504297-3072b9a4b1a8?q=80&w=1160&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+                    style: {},
+                    bgStyle: {},
+                    link: './moon'
+                },
+                {
+                    title: '今日は何の日',
+                    desc: '記念日・出来事',
+                    image: 'https://images.unsplash.com/photo-1633102467628-6511a5129a03?q=80&w=1074&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+                    style: {},
+                    bgStyle: {},
+                    link: './anniversary'
+                },
+                {
+                    title: 'FUKUWARAI',
+                    desc: '福笑い',
+                    image: 'https://images.unsplash.com/photo-1543312872-6800b9d9e30f?q=80&w=2078&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+                    style: {},
+                    bgStyle: {},
+                    link: './fukuwarai'
+                },
+                {
+                    title: '名前診断',
+                    desc:  'サクッと診断',
+                    image: 'https://images.unsplash.com/photo-1532938911079-1b06ac7ceec7?q=80&w=1932&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+                    style: {},
+                    bgStyle: {},
+                    link: './form.html'
+                }
+                
+            ]
+        },
+        methods: {
+            // カードにマウスを乗せたときの傾き・背景移動処理
+            handleMouseMove(e, el) {
+                const card = el.querySelector('.card');
+                const cardBg = el.querySelector('.card-bg');
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                const cx = rect.width / 2;
+                const cy = rect.height / 2;
+                const dx = (x - cx) / cx;
+                const dy = (y - cy) / cy;
+                const maxTilt = 30;
+                card.style.transform = `rotateY(${dx * maxTilt}deg) rotateX(${-dy * maxTilt}deg)`;
+                cardBg.style.transform = `translateX(${-dx * 20}px) translateY(${-dy * 20}px)`;
+            },
+            handleMouseEnter(el) {
+                // 何もしない
+            },
+            // マウスが離れたときに元に戻す
+            handleMouseLeave(el) {
+                const card = el.querySelector('.card');
+                const cardBg = el.querySelector('.card-bg');
+                card.style.transform = '';
+                cardBg.style.transform = '';
+            }
+        }
+    });
+    // カードクリックでリンク先に遷移
+    document.addEventListener('click', function(e){
+        let wrap = e.target.closest('.card-wrap');
+        if(wrap && wrap.__vue__){
+            // Vueのv-forで生成された要素には__vue__はつかないため、下記で取得
+            const idx = Array.from(wrap.parentNode.children).indexOf(wrap);
+            const link = Vue.prototype.$children[0].cards[idx].link;
+            if(link) location.href = link;
+        } else if(wrap) {
+            // fallback: data-link属性から取得
+            const idx = Array.from(wrap.parentNode.children).indexOf(wrap);
+            const app = document.getElementById('app').__vue__;
+            if(app && app.cards[idx].link) location.href = app.cards[idx].link;
+        }
+    });
+    </script>
+</body>
+</html>
+

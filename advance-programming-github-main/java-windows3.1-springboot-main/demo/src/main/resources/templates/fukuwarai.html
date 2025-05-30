@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>オリジナル福笑い</title>
+  <style>
+  body {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            font-family: 'Hannotate SC', sans-serif;
+        }
+        .window {
+            background: #fff8fc;
+            border-radius: 18px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+            padding: 2rem 1.5rem 2.5rem 1.5rem;
+            margin: 3rem auto;
+            max-width: 340px;
+            border: 2px solid #ffe0f7;
+            text-align: center;
+            position: relative;
+            animation: popin 0.8s cubic-bezier(.68,-0.55,.27,1.55);
+        }
+        .title-bar {
+            background: #ffb6b9;
+            border-radius: 12px 12px 0 0;
+            padding: 0.5rem 0;
+            margin-bottom: 1.2rem;
+        }
+        .title-bar-text {
+            color: #fff;
+            font-weight: bold;
+            font-size: 1.2rem;
+            letter-spacing: 0.1em;
+        }
+        .back-btn {
+            margin-top: 2rem;
+            background: #ffb6b9;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 0.5rem 1.5rem;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 2px 8px #ffe0f7;
+            transition: background 0.2s;
+        }
+        .back-btn:hover {
+            background: #ff7eb9;
+        }
+        @keyframes popin {
+            0% { transform: scale(0.7) translateY(40px); opacity: 0; }
+            80% { transform: scale(1.05) translateY(-8px); opacity: 1; }
+            100% { transform: scale(1) translateY(0); opacity: 1; }
+        }
+  #cvs {
+    border: 1px solid #ffffff;
+    display: block;
+    margin: 40px auto;      /* 上下に余白、左右中央寄せ */
+    position: relative;
+    left: 0; right: 0;
+  }
+  .controls { text-align: center; margin: 10px; }
+  button { margin: 0 10px; padding: 10px 20px; font-size: 16px; }
+  dialog { padding: 20px; border: none; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+  </style>
+</head>
+<body>
+
+<canvas id="cvs" width="800" height="600"></canvas>
+
+<div class="controls">
+  <button onclick="app.download_image()">画像を保存</button>
+  <button onclick="location.href='/index'">Topに戻る</button>
+</div>
+
+<dialog id="about">
+  <p><strong>オリジナル福笑い</strong><br>顔のパーツをドラッグして遊んでください。</p>
+  <button onclick="this.close()">閉じる</button>
+</dialog>
+
+<!-- 顔パーツの画像（例として顔・目・口を3つずつ） -->
+<img id="base" src="/face.png" style="display:none">
+<img id="eye1" src="/leftEye.png" style="display:none">
+<img id="eye2" src="/rightEye.png" style="display:none">
+<img id="mayu1" src="/leftMayuge.png" style="display:none">
+<img id="mayu2" src="rightMayuge.png" style="display:none">
+<img id="mouth" src="/mouth.png" style="display:none">
+<img id="nose" src="nose.png" style="display:none">
+
+<!-- Fabric.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.0/fabric.min.js"></script>
+
+<!-- タッチ操作対応（jQuery UI Mouse拡張） -->
+<script>
+!function(a){function f(a,b){if(!(a.originalEvent.touches.length>1)){a.preventDefault();var c=a.originalEvent.changedTouches[0],d=document.createEvent("MouseEvents");d.initMouseEvent(b,!0,!0,window,1,c.screenX,c.screenY,c.clientX,c.clientY,!1,!1,!1,!1,0,null),a.target.dispatchEvent(d)}}if(a.support.touch="ontouchend"in document,a.support.touch){var e,b=a.ui.mouse.prototype,c=b._mouseInit,d=b._mouseDestroy;b._touchStart=function(a){var b=this;!e&&b._mouseCapture(a.originalEvent.changedTouches[0])&&(e=!0,b._touchMoved=!1,f(a,"mouseover"),f(a,"mousemove"),f(a,"mousedown"))},b._touchMove=function(a){e&&(this._touchMoved=!0,f(a,"mousemove"))},b._touchEnd=function(a){e&&(f(a,"mouseup"),f(a,"mouseout"),this._touchMoved||f(a,"click"),e=!1)},b._mouseInit=function(){var b=this;b.element.bind({touchstart:a.proxy(b,"_touchStart"),touchmove:a.proxy(b,"_touchMove"),touchend:a.proxy(b,"_touchEnd")}),c.call(b)},b._mouseDestroy=function(){var b=this;b.element.unbind({touchstart:a.proxy(b,"_touchStart"),touchmove:a.proxy(b,"_touchMove"),touchend:a.proxy(b,"_touchEnd")}),d.call(b)}}}(jQuery);
+</script>
+
+<script>
+const app = (function() {
+  let cvs = null;
+
+  function init() {
+    const canvas = new fabric.Canvas('cvs', { backgroundColor: 'white' });
+    cvs = canvas;
+
+    // ベース画像の読み込み完了後に処理
+    const baseImg = document.getElementById('base');
+    baseImg.onload = function() {
+        // canvasサイズとbase画像サイズの比率を計算
+        const scaleX = canvas.width / baseImg.naturalWidth;
+        const scaleY = canvas.height / baseImg.naturalHeight;
+        // ベース画像をcanvasの中央に配置
+        const left = (canvas.width - baseImg.naturalWidth * scaleX) / 2;
+        const top = (canvas.height - baseImg.naturalHeight * scaleY) / 2;
+        const base = new fabric.Image(baseImg, {
+            left: left,
+            top: top,
+            scaleX: scaleX,
+            scaleY: scaleY,
+            selectable: false,
+            evented: false
+        });
+        canvas.add(base);
+
+        // 顔パーツ情報
+        const parts = [
+            { id: 'eye1', left: 150, top: 150 },
+            { id: 'eye2', left: 300, top: 150 },
+            { id: 'mayu1', left: 450, top: 150 },
+            { id: 'mayu2', left: 200, top: 300 },
+            { id: 'mouth', left: 300, top: 300 },
+            { id: 'nose', left: 400, top: 300 },
+        ];
+
+        for (const part of parts) {
+            const img = new fabric.Image(document.getElementById(part.id), {
+                left: left + part.left * scaleX,
+                top: top + part.top * scaleY,
+                scaleX: scaleX,
+                scaleY: scaleY,
+                hasControls: false,
+                lockScalingX: true,
+                lockScalingY: true,
+                lockRotation: true
+            });
+            canvas.add(img);
+        }
+
+        canvas.on('selection:created', e => {
+            if (e.selected.length > 1) canvas.discardActiveObject();
+        });
+
+        canvas.on('selection:updated', e => {
+            e.selected?.forEach(obj => {
+                obj.setControlVisible('mtr', false); // 回転不可
+            });
+        });
+    };
+    // 画像がキャッシュ済みの場合もonloadを呼ぶ
+    if (baseImg.complete) baseImg.onload();
+  }
+
+  function show_about() {
+    document.getElementById('about').showModal();
+  }
+
+  function download_image() {
+    const canvasEl = document.getElementById('cvs');
+    try {
+      const link = document.createElement('a');
+      link.href = canvasEl.toDataURL('image/png');
+      link.download = 'fukuwarai.png';
+      link.click();
+    } catch (e) {
+      alert('ダウンロード時にエラーが発生しました。');
+      console.error(e);
+    }
+  }
+
+  window.onload = init;
+
+  return {
+    show_about,
+    download_image
+  };
+})();
+</script>
+
+</body>
+</html>
