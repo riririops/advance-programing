@@ -28,9 +28,12 @@
 
 # 実行方法  
 > このリポジトリをクローンします。
+ 
 > propertiesのgooleログインの*your-idとyour-secret*は自分のものに変更してください。
+ 
 > java-windows3.1-springboot-main\demo\src\main\java\windows\java\demoのDemoApplication.javaを起動し、
 > localhost:8080にアクセスしてください。
+ 
 > login画面に行くのでgoogleアカウントでログインしてください。
 
 ## 工夫した点、学んだこと  
